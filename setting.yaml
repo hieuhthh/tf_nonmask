@@ -7,7 +7,7 @@ im_size_before_crop: 180 # ~ for not using this
 crop_prob: 0.8
 
 label_mode: cate_int
-BATCH_SIZE: 256
+BATCH_SIZE: 128
 
 valid_ratio: 0.001
 test_ratio: ~
