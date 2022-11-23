@@ -74,24 +74,28 @@ def clean_image(route, to_des, im_size):
     pool.join()
 
 if __name__ == '__main__':
-    to_des = 'dataset'
-    im_size = 160
+    from utils import *
 
-    # try:
-    #     shutil.rmtree(to_des)
-    # except:
-    #     pass
+    settings = get_settings()
+    globals().update(settings)
+
+    des = path_join(route, 'dataset')
 
     try:
-        os.mkdir(to_des)
+        shutil.rmtree(des)
     except:
         pass
 
-    # route = 'unzip/gnv_dataset'
-    # clean_image(route, to_des, im_size)
+    try:
+        os.mkdir(des)
+    except:
+        pass
+
+    route = 'unzip/gnv_dataset'
+    clean_image(route, des, im_size)
 
     route = 'unzip/VN-celeb'
-    clean_image(route, to_des, im_size)
+    clean_image(route, des, im_size)
 
-    # route = 'unzip/glint360k_224'
-    # clean_image(route, to_des, im_size)
+    route = 'unzip/glint360k_224'
+    clean_image(route, des, im_size)

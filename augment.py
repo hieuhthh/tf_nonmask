@@ -151,7 +151,11 @@ def build_augment():
         img = clip_image(img)
 
         if setting_cfg['im_size_before_crop'] is not None:
-            img = tf.image.random_crop(img, size=(setting_cfg['im_size'], setting_cfg['im_size'], 3))
+            P6 = tf.cast(tf.random.uniform([], 0, 1) < setting_cfg['crop_prob'], tf.int32)
+            if P6 == 1:
+                img = tf.image.random_crop(img, size=(setting_cfg['im_size'], setting_cfg['im_size'], 3))
+            else:
+                img = img = tf.image.resize(img, (setting_cfg['im_size'], setting_cfg['im_size']))
 
         return img
 
@@ -160,11 +164,13 @@ def build_augment():
 if __name__ == '__main__':
     import cv2
     from utils import *
+
+    os.environ["CUDA_VISIBLE_DEVICES"]=""
     
     settings = get_settings('augment.yaml')
     globals().update(settings)
 
-    sample_inp = '/home/huynx2/hieunmt/other/tf_img_pipeline/dataset/dataset00001/camA_id_00001_num_001.png'
+    sample_inp = '/home/lap14880/hieunmt/tf_nonmask/unzip/VN-celeb/1/0.png'
     img = cv2.imread(sample_inp)
     cv2.imwrite("sample_inp.png", img)
 

@@ -1,0 +1,3 @@
+python download.py
+python unzip.py
+python clean_dataset.py

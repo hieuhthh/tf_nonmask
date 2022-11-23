@@ -167,6 +167,8 @@ if __name__ == '__main__':
     from utils import *
     from multiprocess_dataset import *
 
+    os.environ["CUDA_VISIBLE_DEVICES"]=""
+
     settings = get_settings()
     globals().update(settings)
 
