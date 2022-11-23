@@ -7,9 +7,9 @@ im_size_before_crop: 180 # ~ for not using this
 crop_prob: 0.8
 
 label_mode: cate_int
-BATCH_SIZE: 128
+BATCH_SIZE: 256
 
-valid_ratio: 0.1
+valid_ratio: 0.001
 test_ratio: ~
 
 train_with_labels: True
@@ -22,17 +22,26 @@ valid_repeat: False
 valid_shuffle: False
 valid_augment: False
 
+use_simple_emb: False
+
 base_name: 'EfficientNetV2S'
-final_dropout: 0.3
+final_dropout: 0.4
 have_emb_layer: True
 emb_dim: 512
 use_normdense: True
+
+# advance emb
+extract_dim: 128
+dense_dim: 128
+kernel_sizes: [1, 3, 7]
+dilation_rates: [4, 8, 12]
+trans_layers: 1
 
 pretrained: ~
 
 arcface_label_smoothing: 0
 arcface_margin1: 1.0
-arcface_margin2: 0.5
+arcface_margin2: 0.6
 arcface_margin3: 0
 arc_face_weight: 1.0
 
@@ -44,6 +53,6 @@ mode: min
 
 max_lr: 1.0e-3
 min_lr: 1.0e-5
-cycle_epoch: 10
+cycle_epoch: 30
 n_cycle: 1
 save_weights_only: False

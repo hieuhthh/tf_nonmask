@@ -60,7 +60,12 @@ strategy = auto_select_accelerator()
 
 with strategy.scope():
     base = get_base_model(base_name, input_shape)
-    emb_model = create_emb_model(base, final_dropout, have_emb_layer, emb_dim)
+    if use_simple_emb:
+        emb_model = create_emb_model(base, final_dropout, have_emb_layer, emb_dim)
+    else:
+        emb_model = create_emb_model(base, final_dropout, have_emb_layer, "embedding",
+                                     emb_dim, extract_dim, dense_dim, trans_layers,
+                                     kernel_sizes, dilation_rates)
     model = create_model(input_shape, emb_model, n_labels, use_normdense, use_cate_int)
     model.summary()
 

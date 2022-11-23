@@ -172,7 +172,8 @@ if __name__ == '__main__':
     settings = get_settings()
     globals().update(settings)
 
-    route_dataset = path_join(route, 'dataset')
+    # route_dataset = path_join(route, 'dataset')
+    route_dataset = path_join(route, 'unzip', 'VN-celeb')
 
     img_size = (im_size, im_size)
     input_shape = (im_size, im_size, 3)
