@@ -17,3 +17,6 @@ solarize_prob: 0.3
 solarize_threshold: 0.5
 
 equalize_prob: 0.3
+
+cutout_mask_prob: 0.3
+cutout_mask_height_factor: 0.4

@@ -108,12 +108,48 @@ def color_image(img, hue, sat, cont, bri):
     img = tf.image.random_brightness(img, bri) if bri is not None else img
     return img
 
+def cutout_mask(image, pad_factor, replace=None):
+    if tf.math.equal(pad_factor, 0):
+        return image
+
+    if replace is None:
+        replace = tf.random.uniform(shape=[], minval=0, maxval=1., dtype=tf.float32)
+
+    image_height = tf.shape(image)[0]
+    image_width = tf.shape(image)[1]
+
+    z_o = tf.random.uniform(shape=[], minval=0.8, maxval=1.2, dtype=tf.float32)
+    pad_size = tf.cast(z_o * (1.0-tf.cast(pad_factor, tf.float32)) * tf.cast(image_height, tf.float32), tf.int32)
+
+    # Sample the center location in the image where the zero mask will be applied.
+
+    lower_pad = pad_size
+    upper_pad = 0
+    left_pad = 0
+    right_pad = 0
+
+    # edge_rate_left = tf.random.uniform(shape=[], minval=0.0, maxval=0.1, dtype=tf.float32)
+    # left_pad = tf.maximum(0, tf.cast(edge_rate*tf.cast(image_width,tf.float32), tf.int32))
+    # right_pad = tf.maximum(0, tf.cast(edge_rate*tf.cast(image_width,tf.float32), tf.int32))
+
+    cutout_shape = [image_height - (lower_pad + upper_pad), image_width - (left_pad + right_pad)]
+    padding_dims = [[lower_pad, upper_pad], [left_pad, right_pad]]
+    mask = tf.pad(tf.zeros(cutout_shape, dtype=image.dtype), padding_dims, constant_values=1)
+    mask = tf.expand_dims(mask, -1)
+    mask = tf.tile(mask, [1, 1, 3])
+    image = tf.where(tf.equal(mask, 0), tf.ones_like(image, dtype=image.dtype) * replace, image)
+    return image
+
 def build_augment():
     setting_cfg = get_settings('setting.yaml')
     aug_cfg = get_settings('augment.yaml')
 
     def augment_img(img):
         cnt = 0
+
+        Pmask = tf.cast(tf.random.uniform([], 0, 1) < aug_cfg['cutout_mask_prob'], tf.int32)
+        if Pmask == 1:
+            img = cutout_mask(img, aug_cfg['cutout_mask_height_factor'])
 
         P0_left_right = tf.cast(tf.random.uniform([], 0, 1) < aug_cfg['flip_left_right_prob'], tf.int32)
         if P0_left_right == 1:
@@ -147,7 +183,7 @@ def build_augment():
         if cnt < 3 and P5 == 1:
             img = equalize_image(img)
             cnt += 1
-    
+
         img = clip_image(img)
 
         if setting_cfg['im_size_before_crop'] is not None:
@@ -191,9 +227,10 @@ if __name__ == '__main__':
 
     # img = equalize_image(img)
 
+    # img = cutout_mask(img, cutout_mask_height_factor)
+
     img = clip_image(img)
 
     img = img.numpy()[...,::-1] * 255
     cv2.imwrite("sample_aug.png", img)
-
     
